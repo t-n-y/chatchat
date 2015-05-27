@@ -1,0 +1,37 @@
+extends layout
+
+block content
+  .container
+    .row
+        .col-md-12
+            h1
+                span.mdi-action-face-unlock 
+                |  #{title}
+    .row
+        .col-md-10
+          .col-md-4
+            div(class=['panel', 'panel-default', 'presentation'])
+              .panel-body
+                div(class=['bighead', 'mdi-social-whatshot'], style='color: #e65100')
+                h2 Julien
+                p.
+                  Non mais "fiya" ça veut dire que t'es défoncé ?
+          .col-md-4
+            div(class=['panel', 'panel-default', 'presentation'])
+              .panel-body
+                div(class=['bighead', 'mdi-maps-local-florist'], style='color: #388e3c')
+                h2 Guillaume
+                p.
+                  Coucou tu veux voir ma Guillaume ?
+                  Ca fait bizarre, elles sont pas toutes à la même taille.
+
+          .col-md-4
+            div(class=['panel', 'panel-default', 'presentation'])
+              .panel-body
+                div(class=['bighead', 'mdi-action-favorite'], style='color: #fbc02d')
+                h2 Jonathan
+                p.
+                  On est pas obligé de mettre du texte !
+
+        include ./nav.jade
+          

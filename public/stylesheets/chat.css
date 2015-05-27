@@ -1,0 +1,114 @@
+.chat-msg {
+    width: 70%;
+    margin: 5px;
+    padding: 5px 5px 0px 5px;
+    color: #fff;
+}
+.msg-left {
+    float: left;
+    text-align: right;
+    background: #1976d2;
+    border-radius: 3px 3px 3px 0px;
+}
+.msg-right {
+    float: right;
+    text-align: left;
+    background: #009688;
+    border-radius: 3px 3px 0px 3px;
+}
+.msg-left .msg-info {
+    text-align: left;
+}
+.msg-right .msg-info {
+    text-align: right;
+}
+.msg-info {
+    margin-top: 3px;
+    font-size: 0.7em;
+    color: rgba(255, 255, 255, 0.6);
+}
+.panel-body {
+    max-height: 450px;
+    overflow: auto;
+}
+.panel-heading h4 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+.panel-body .list-group .list-group-item .list-group-item-heading {
+    line-height: 20px;
+    font-size: 20px;
+}
+.panel-body .list-group {
+    margin-bottom: 0px;
+}
+.panel-body .list-group .list-group-item {
+    padding: 0px;
+}
+.panel-body .list-group .list-group-item .row-content {
+    min-height: 0px;
+}
+.chat-alert {
+    text-align: center;
+    width: 100%;
+    clear: both;
+}
+.chat-picto {
+    font-size: 16px;
+}
+.nav-custom {
+    text-align: center;
+}
+.nav-custom div {
+    padding: 0px;
+}
+.nav-custom a {
+    color: #009688;
+    font-size: 60px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+.nav-custom a:hover {
+    text-decoration: none;
+    color: #333333;
+}
+.form-group img.circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 100%;
+}
+.avatar-picker {
+    text-align: center;
+}
+.container .well {
+    box-shadow: 0 1px 6px 0 rgba(0, 0, 0, 0.12), 0 1px 6px 0 rgba(0, 0, 0, 0.12);
+}
+.form-group .btn {
+    margin-left: 10px;
+}
+#user-list .list-group-separator:first-child {
+    display: none;
+}
+#chatroom .chat-msg img {
+    max-width: 100%;
+}
+#user-list.list-group .list-group-item .row-content .least-content {
+    font-size: 22px;
+    color: #eeeeee;
+}
+#user-list.list-group .list-group-item .row-content .least-content.writing {
+    color: #388e3c;
+}
+.bighead {
+    font-size: 150px;
+}
+.presentation {
+    text-align: center;
+}
+.dl-pic {
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+    margin: 10px;
+    border: 3px solid #ffffff;
+}

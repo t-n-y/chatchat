@@ -1,0 +1,29 @@
+extends layout
+
+block content
+  .container
+    .row
+        .col-md-12
+            h1
+                span.mdi-editor-insert-drive-file 
+                |  #{title}
+    .row
+        .col-md-10
+          .col-md-5
+            .well
+              form(class='form-horizontal', id='chat-connection', data-json-string='', action='/upload', enctype='multipart/form-data', method='post')
+                fieldset
+                  legend Téléversement de fichier
+                  .form-group
+                    label(class=['col-lg-2', 'control-label'], for='inputFile') Fichier
+                    .col-lg-10
+                      input(id='inputFile', type='file', name='upload', multiple='multiple')
+                  .form-group
+                    div(class=['col-md-10', 'col-md-offset-2'])
+                      button(class=['btn', 'btn-primary'], type='submit') Envoyer
+          .col-md-7
+            each file in files
+              img(src=file, class='dl-pic')
+
+        include ./nav.jade
+          

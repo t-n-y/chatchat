@@ -1,0 +1,181 @@
+extends layout
+
+block content
+  script(src='/socket.io/socket.io.js')
+  script(src='/javascripts/jquery.min.js')
+  script(type='text/javascript').
+    var socket = io.connect('http://192.168.56.1:3000');
+
+    $(document).ready(function() {
+      $('#connect').on('click', function() {
+        var jsonstring = '';
+        var pseudo = $('input#pseudo').val();
+        if(pseudo == '') {
+          alert('Vous devez choisir un pseudo');
+          return false;
+        }
+        var description = $('input#description').val();
+        var userId = Math.floor(Math.random()*1000000) + 1;
+        var avatarUrl = $('input[name="avatar"]:checked').val();
+        jsonstring = '{"userid": "' + userId + '", "username": "' + pseudo + '", "userdescription": "' + description + '", "avatar": "' + avatarUrl + '" }';
+
+        $('#chat-connection').attr('data-json-string', jsonstring);
+
+        socket.emit('logserv', jsonstring);
+      });
+
+      function sendMessage (e) {
+
+        var d = new Date();
+        var y = d.getFullYear();
+        var m = (d.getMonth() + 1).toString();
+        if(m.length < 2) m = '0' + m;
+        var dy = d.getDate();
+        var h = d.getHours();
+        var mi = d.getMinutes().toString();
+        if(mi.length < 2) mi = '0' + mi;
+        var msgtime = dy + "/" + m + "/" + y + " " + h + "h" + mi;
+
+        var message = $('#writer').val();
+        var user = $('#chat-connection').attr('data-json-string');
+        var userjson = JSON.parse(user);
+        socket.emit('message', {'user': user, 'message': message, 'msgtime': msgtime});
+        $('#writer').val('');
+        var msghtml = '<div class="chat-msg msg-right"><div class="msg-content">' + message + '</div><div class="msg-info" data-author="' + userjson.userid + '">' + userjson.username + ' - ' + msgtime + '</div></div>';
+        $('#chatroom').append(msghtml);
+      }
+
+      $('#writer').on('keypress', function (e) {
+        var userjson = JSON.parse($('#chat-connection').attr('data-json-string'));
+        
+        if(e.which == 13) { 
+          sendMessage(e);
+          socket.emit('stopwriting', userjson);
+          $('div[data-user-id="' + userjson.userid + '"] .least-content').removeClass('writing');
+        } else {
+
+          if($("#writer").val() == '') {
+            socket.emit('stopwriting', userjson);
+            $('div[data-user-id="' + userjson.userid + '"] .least-content').removeClass('writing');
+          } else {
+            socket.emit('iswriting', userjson);
+            $('div[data-user-id="' + userjson.userid + '"] .least-content').addClass('writing');
+          }
+        }
+      });
+
+      $('#send').on('click', function (e) {
+        sendMessage(e);
+      });
+    });
+
+    function userlisthtml (json) {
+      return '<div class="list-group-separator" data-user-id="' + json.userid + '"></div><div class="list-group-item" data-user-id="' + json.userid + '"><div class="row-picture"><img class="circle" src="' + json.avatar + '" alt="' + json.username + '"></div><div class="row-content"><div class="least-content mdi-notification-sms"></div><div class="list-group-item-heading">' + json.username + '</div><div class="list-group-item-text">' + json.userdescription + '</div></div></div>';
+    }
+
+    function toBottomWeGo() {
+      var objDiv = $('#chatroom');
+      objDiv.scrollTop = objDiv.scrollHeight;
+    }
+
+    socket.on('logcli', function (jsonstring) {
+      var json = JSON.parse(jsonstring);
+      var userlisthtmlstring = userlisthtml(json);
+      var chathtml = '<div class="chat-alert"><span class="chat-picto mdi-social-person-add"></span> ' + json.username + ' s\'est connecté</div>';
+
+      $('#user-list').append(userlisthtmlstring);
+      $('#chatroom').append(chathtml);
+      toBottomWeGo();
+    });
+
+    socket.on('chat-on', function(users) {
+      $('.well').addClass('hidden');
+      $('.panel').removeClass('hidden');
+      var userlisthtmlstring = '';
+      for(var i = 0; i < users.length; i++) {
+        var userjson = JSON.parse(users[i]);
+        var newhtml =  userlisthtml(userjson);
+        if(userjson != 0) userlisthtmlstring += newhtml.toString();
+      }
+      $('#user-list').append(userlisthtmlstring);
+      toBottomWeGo();
+    });
+
+    socket.on('chat-out', function (jsonstring) {
+      var user = JSON.parse(jsonstring);
+      var chathtml = '<div class="chat-alert"><span class="chat-picto mdi-social-person-outline"></span> ' + user.username + ' s\'est déconnecté</div>';
+      $('#chatroom').append(chathtml);
+      $('div[data-user-id="' + user.userid + '"]').remove();
+      toBottomWeGo();
+    });
+
+    socket.on('newmessage', function (data) {      
+      var user = JSON.parse(data.user);
+      var messagehtml = '<div class="chat-msg msg-left"><div class="msg-content">' + data.message + '</div><div class="msg-info" data-author="' + user.userid + '">' + user.username + ' - ' + data.msgtime + '</div></div>';
+
+      $('#chatroom').append(messagehtml);
+      
+      toBottomWeGo();
+    });
+
+    socket.on('someonewriting', function (data) {
+      $('div[data-user-id="' + data.userid + '"] .least-content').addClass('writing');
+    });
+
+    socket.on('notwriting', function (data) {
+      $('div[data-user-id="' + data.userid + '"] .least-content').removeClass('writing');
+    });
+
+  .container
+    .row
+        .col-md-12
+            h1
+                span.mdi-action-question-answer 
+                |  #{title}
+    .row
+        .col-md-6
+          .well
+            form(class='form-horizontal', id='chat-connection', data-json-string='')
+              fieldset
+                legend Connectez vous au chat
+                .form-group
+                  label(class=['col-md-2', 'control-label'], for='pseudo') Pseudo
+                  .col-md-10
+                    input(id='pseudo', class='form-control', type='text', placeholder='Pseudonyme')
+                .form-group
+                  label(class=['col-md-2', 'control-label'], for='description') Description
+                  .col-md-10
+                    input(id='description', class='form-control', type='text', placeholder='Brève description')
+                .form-group
+                  label(class=['col-md-2', 'control-label'], for='pseudo') Avatar
+                  .col-md-10
+                    each file in files
+                      div(class=['col-md-4', 'avatar-picker'])
+                        img(class='circle', src=file)
+                        div(class=['radio', 'radio-primary'])
+                          label
+                            input(type='radio', name='avatar', value=file)
+                            span.circle
+                            span.check
+                .form-group
+                  div(class=['col-md-10', 'col-md-offset-2'])
+                    div(class=['btn', 'btn-primary'], id='connect') Se connecter
+
+                
+
+          div(class=['panel', 'panel-default', 'hidden'])
+            div(class='panel-body', id='chatroom')
+            .panel-footer
+              .input-group
+                input(class='form-control', type='text', placeholder='Ecrire un message', id='writer')
+                span.input-group-btn
+                  div(class=['btn', 'btn-primary', 'btn-sm', 'mdi-content-send'], id='send')
+        .col-md-4
+          div(class=['panel', 'panel-primary', 'hidden'])
+            .panel-heading
+              h4
+                span.mdi-action-account-circle
+                |  Participants
+            .panel-body
+              div(class='list-group', id='user-list')
+        include ./nav.jade
